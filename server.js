@@ -10,15 +10,16 @@ const upload = multer({ dest: 'temp/' });
 
 bugsnag.register(config.bugsnagKey);
 
-// bugsnag.notify(new Error("Non-fatal"));
-
 app.post("/", upload.any(), function (request, response) {
   var file = request.files[0];
   if(file) {
     minidump.walkStack(file.path, function(error, report) {
       if(report) {
         const reportString = report.toString('utf-8');
-        const reason = reportString.split("Crash reason: ")[1].split("Crash address")[0];
+        if(reportString) {
+          const reason = reportString.split("Crash reason: ")[1].split("Crash address")[0];
+          bugsnag.notify(new Error(reason));
+        }
       }
       fs.unlink(file.path);
     });
