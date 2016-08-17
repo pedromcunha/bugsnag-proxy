@@ -16,7 +16,7 @@ app.post("/", upload.any(), function (request, response) {
   if(file) {
     minidump.walkStack(file.path, function(error, report) {
       const data = {
-        metaData: {
+        custom: {
           electron_version: request.body.ver,
           platform: request.body.platform
         }
