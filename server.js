@@ -11,6 +11,7 @@ const upload = multer({ dest: 'temp/' });
 bugsnag.register(config.bugsnagKey);
 
 app.post("/", upload.any(), function (request, response) {
+  console.log('Received an Error');
   const file = request.files[0];
   if(file) {
     minidump.walkStack(file.path, function(error, report) {
