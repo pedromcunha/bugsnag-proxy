@@ -11,14 +11,24 @@ const upload = multer({ dest: 'temp/' });
 bugsnag.register(config.bugsnagKey);
 
 app.post("/", upload.any(), function (request, response) {
-  var file = request.files[0];
+  const file = request.files[0];
   if(file) {
     minidump.walkStack(file.path, function(error, report) {
-      if(report) {
+      const data = {
+        extraData: {
+          electron_version: request.body.ver,
+          platform: request.body.platform
+        }
+      };
+
+      if(report !== undefined) {
         const reportString = report.toString('utf-8');
-        if(reportString) {
+        if(reportString !== undefined) {
           const reason = reportString.split("Crash reason: ")[1].split("Crash address")[0];
-          bugsnag.notify(new Error(reason));
+          bugsnag.configure({
+            appVersion: request.body._version
+          });
+          bugsnag.notify(new Error(reason), data);
         }
       }
       fs.unlink(file.path);
