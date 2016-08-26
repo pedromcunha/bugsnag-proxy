@@ -29,7 +29,7 @@ function handleCrashReport(request, releaseStage, platform) {
             releaseStage: releaseStage,
             hostname: platform
           });
-
+          data.groupingHash = reason;
           bugsnag.notify(new Error(reason), data);
         }
       }
